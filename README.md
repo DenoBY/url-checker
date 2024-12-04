@@ -24,10 +24,10 @@ php yii rbac/create-admin
 Добавить url-ы можно по адресу http://frontend.test/url-checker
 
 ## Backend:
-Список добавленных url-ов http://backend.test/url-checker/urls
+Список добавленных url-ов http://backend.test/url-checker/urls<br>
 Список проверок http://backend.test/url-checker/checks
 
-Доступ в админку
+Доступ в админку:
 ```
 login: admin
 password: admin
