@@ -74,7 +74,6 @@ class UrlCheckJob extends BaseObject implements JobInterface
             return;
         }
 
-
         $queue->delay($url->check_interval * 60)->push(new self([
             'urlId' => $this->urlId,
         ]));
