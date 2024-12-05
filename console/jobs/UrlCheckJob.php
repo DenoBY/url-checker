@@ -29,12 +29,8 @@ class UrlCheckJob extends BaseObject implements JobInterface
         try {
             $responseCode = $this->checkUrl($url->url);
 
-            $urlCheck = new UrlCheck();
-            $urlCheck->url_id = $url->id;
-            $urlCheck->status_code = $responseCode;
-            $urlCheck->save();
-
-            $this->handleUrlCheckResult($queue, $url, $urlCheck);
+            $this->saveCheckResult($responseCode);
+            $this->handleUrlCheckResult($queue, $url, $responseCode);
 
             $transaction->commit();
         } catch (Exception $e) {
@@ -66,9 +62,17 @@ class UrlCheckJob extends BaseObject implements JobInterface
         return $httpCode;
     }
 
-    private function handleUrlCheckResult(Queue $queue, Url $url, UrlCheck $urlCheck): void
+    private function saveCheckResult(int $responseCode): void
     {
-        if ($urlCheck->status_code !== self::HTTP_OK) {
+        $urlCheck = new UrlCheck();
+        $urlCheck->url_id = $this->urlId;
+        $urlCheck->status_code = $responseCode;
+        $urlCheck->save();
+    }
+
+    private function handleUrlCheckResult(Queue $queue, Url $url, int $statusCode): void
+    {
+        if ($statusCode !== self::HTTP_OK) {
             $this->handleUrlCheckResultError($queue, $url);
 
             return;
