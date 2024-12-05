@@ -68,17 +68,8 @@ class UrlCheckJob extends BaseObject implements JobInterface
 
     private function handleUrlCheckResult(Queue $queue, Url $url, UrlCheck $urlCheck): void
     {
-        if ($urlCheck->status_code !== self::HTTP_OK ) {
-            $url->retry_count -= 1;
-            $url->save();
-
-            if ($url->retry_count > 0) {
-                $queue->delay($url->retry_delay * 60)->push(new self([
-                    'urlId' => $url->id,
-                ]));
-
-                return;
-            }
+        if ($urlCheck->status_code !== self::HTTP_OK) {
+            $this->handleUrlCheckResultError($queue, $url);
 
             return;
         }
@@ -86,6 +77,20 @@ class UrlCheckJob extends BaseObject implements JobInterface
 
         $queue->delay($url->check_interval * 60)->push(new self([
             'urlId' => $this->urlId,
+        ]));
+    }
+
+    private function handleUrlCheckResultError(Queue $queue, Url $url): void
+    {
+        $url->retry_count -= 1;
+        $url->save();
+
+        if ($url->retry_count == 0) {
+            return;
+        }
+
+        $queue->delay($url->retry_delay * 60)->push(new self([
+            'urlId' => $url->id,
         ]));
     }
 }
