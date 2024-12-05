@@ -80,9 +80,6 @@ class UrlCheckJob extends BaseObject implements JobInterface
                 return;
             }
 
-            $url->is_active = false;
-            $url->save();
-
             return;
         }
 
