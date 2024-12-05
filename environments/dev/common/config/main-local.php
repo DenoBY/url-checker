@@ -1,13 +1,22 @@
 <?php
 
 return [
+    'bootstrap' => [
+        'queue',
+    ],
     'components' => [
         'db' => [
             'class' => \yii\db\Connection::class,
-            'dsn' => 'mysql:host=localhost;dbname=yii2advanced',
-            'username' => 'root',
-            'password' => '',
+            'dsn' => 'mysql:host=mysql;dbname=url_checker',
+            'username' => 'url_checker',
+            'password' => 'url_checker',
             'charset' => 'utf8',
+        ],
+        'queue' => [
+            'class' => \yii\queue\amqp_interop\Queue::class,
+            'driver' => yii\queue\amqp_interop\Queue::ENQUEUE_AMQP_LIB,
+            'dsn' => 'amqp://user:password@rabbitmq:5672/%2F',
+            'queueName' => 'queue',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
